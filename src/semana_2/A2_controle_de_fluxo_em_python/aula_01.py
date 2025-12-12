@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """ Aula 01 - Operadores """
 
 n1 = 10.2
