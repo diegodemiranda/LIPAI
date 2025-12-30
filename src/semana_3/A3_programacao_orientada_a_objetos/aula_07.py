@@ -1,69 +1,114 @@
-""" Aula 08 - Herança entre classes e uso de super() """
+""" Aula 07 - Relacionamentos entre classes
+
+Exemplos de composição/associação entre Pessoa, Endereco e Telefone.
+"""
+
+from __future__ import annotations
+from typing import List, Optional
 
 
-class Pessoa:  # SUPER CLASSE
-    """Define uma classe Pessoa com os atributos nome, sobrenome e cpf."""
+class Endereco:
+    """Endereço de uma localidade."""
 
-    def __init__(self, nome: str, sobrenome: str, cpf: str):
-        """Construtor da classe com nome, sobrenome e cpf."""
-        self.nome = nome
-        self.sobrenome = sobrenome
-        self.cpf = cpf
+    def __init__(self, cep: str, numero: int):
+        """Construtor do endereço que tem cep e número."""
+        self.cep = str(cep)
+        self.numero = int(numero)
 
-    def obtem_nome_completo(self) -> str:
-        """Retorna o nome completo da pessoa."""
-        return f"{self.nome} {self.sobrenome}"
+    def __str__(self) -> str:
+        """Retorna a representação do objeto Endereco."""
+        return f'Endereco[cep={self.cep}, numero={self.numero}]'
 
-
-class Cliente(Pessoa):  # SUBCLASSE
-    """Classe Cliente feita usando herança de Pessoa."""
-
-    def __init__(self, nome: str, sobrenome: str, cpf: str):
-        """Construtor da subclasse Cliente."""
-        super().__init__(nome, sobrenome, cpf)
-        self.compras = []
+    def __repr__(self) -> str:
+        return f"Endereco('{self.cep}', {self.numero})"
 
 
-class Funcionario(Pessoa):
-    """Classe Funcionario que herda de Pessoa e adiciona salário."""
+class Telefone:
+    """Classe que representa um telefone (ddd + número)."""
 
-    def __init__(self, nome: str, sobrenome: str, cpf: str, salario: float):
-        """Construtor do objeto Funcionario com o salário."""
-        super().__init__(nome, sobrenome, cpf)
-        self.salario = float(salario)
+    def __init__(self, ddd: str, numero: str):
+        """Construtor do telefone com ddd e número."""
+        self.ddd = str(ddd)
+        self.numero = str(numero)
 
-    def calcula_pagamento(self) -> float:
-        """Calcula o pagamento líquido do funcionário (desconto de 10%)."""
-        return self.salario - self.salario * 0.1
+    def __str__(self) -> str:
+        """Retorna a string do objeto Telefone."""
+        return f'Telefone[ddd={self.ddd}, numero={self.numero}]'
+
+    def __repr__(self) -> str:
+        return f"Telefone('{self.ddd}', '{self.numero}')"
 
 
-class Programador(Funcionario):
-    """Classe Programador (subclasse de Funcionario) com bônus."""
+class Pessoa:
+    """Classe Pessoa com nome, cpf, telefone e lista de endereços."""
 
-    def __init__(self, nome: str, sobrenome: str, cpf: str, salario: float, bonus: float):
-        """Construtor da classe Programador."""
-        super().__init__(nome, sobrenome, cpf, salario)
-        self.bonus = float(bonus)
+    def __init__(self, nome: str, cpf: str, telefone: Optional[Telefone] = None):
+        """Construtor da classe Pessoa."""
+        self.nome = str(nome)
+        self.cpf = str(cpf)
+        self.telefone = telefone
+        # lista de endereços associados
+        self.enderecos: List[Endereco] = []
 
-    def calcula_pagamento(self) -> float:
-        """Calcula o pagamento do programador somando o bônus ao pagamento do funcionário."""
-        return super().calcula_pagamento() + self.bonus
+    def add_endereco(self, endereco: Endereco) -> None:
+        """Adiciona um endereço ao objeto Pessoa."""
+        if not isinstance(endereco, Endereco):
+            raise TypeError('endereco deve ser uma instância de Endereco')
+        self.enderecos.append(endereco)
+
+    def print_enderecos(self) -> None:
+        """Imprime os endereços associados à pessoa."""
+        print(f'Endereços de {self.nome}:')
+        if not self.enderecos:
+            print('  (nenhum endereço)')
+            return
+        for endereco in self.enderecos:
+            print('  ', endereco)
+
+    def __str__(self) -> str:
+        telefone_str = str(self.telefone) if self.telefone is not None else 'None'
+        return f'Pessoa[cpf={self.cpf}, nome={self.nome}, telefone={telefone_str}]'
+
+    def __repr__(self) -> str:
+        return f"Pessoa('{self.nome}', '{self.cpf}', {repr(self.telefone)})"
 
 
 if __name__ == '__main__':
-    # Cliente simples
-    cliente = Cliente("João", "da Silva", "111.111.111-11")
-    print(cliente.obtem_nome_completo(), type(cliente))
+    # Pessoa criada com telefone como string (versão simples)
+    pessoa = Pessoa('João da Silva', '12312312333', Telefone('11', '99999-0000'))
+    print(pessoa)
+    print(pessoa.nome, pessoa.cpf, pessoa.telefone)
 
-    # Funcionário
-    funcionario = Funcionario("Maria", "da Silva", "222.222.222-22", 2000.45)
-    print(funcionario.obtem_nome_completo(),
-          funcionario.calcula_pagamento(),
-          funcionario.salario,
-          type(funcionario))
+    # Passando um telefone como instância da classe Telefone
+    print('\nAcessando Classe Telefone')
+    pessoa1 = Pessoa('Maria da Silva', '111111111-11', Telefone('21', '5467-1290'))
+    print(pessoa1)
+    print(pessoa1.nome, pessoa1.cpf, pessoa1.telefone.ddd, pessoa1.telefone.numero)
 
-    # Programador com bônus
-    prog = Programador("José", "Lopes da Silva", "333.333.333-33", 5000.00, 300.00)
-    print(prog.obtem_nome_completo())
-    print(prog.calcula_pagamento())
-    print(type(prog))
+    # criando um objeto telefone e atribuindo a diferentes pessoas
+    tel = Telefone('33', '98765-7520')
+    pessoa3 = Pessoa('José da Silva', '222222222-22', tel)
+    pessoa4 = Pessoa('Ana da Silva', '333333333-33', tel)
+    print('\nPessoas com mesmo telefone')
+    print(pessoa3)
+    print(pessoa4)
+
+    # adicionando endereços a pessoas criadas
+    pessoa.add_endereco(Endereco('12345-890', 450))
+    pessoa.add_endereco(Endereco('23456-789', 759))
+    local = Endereco('78909-786', 515)
+    pessoa1.add_endereco(local)
+    pessoa3.add_endereco(local)
+    pessoa4.add_endereco(local)
+
+    # imprimindo pessoas e seus endereços
+    print('\nImprimindo pessoas e endereços:')
+    print(pessoa1)
+    print(pessoa3)
+    print(pessoa4)
+
+    # imprimindo endereços com o método específico
+    print('\nListagem de endereços por pessoa:')
+    pessoa1.print_enderecos()
+    pessoa3.print_enderecos()
+    pessoa.print_enderecos()
