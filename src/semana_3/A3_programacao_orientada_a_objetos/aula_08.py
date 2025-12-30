@@ -1,146 +1,69 @@
-""" Exercício 01 - Implementar uma classe Aluno com atributos (prontuário, nome,
-email)
-email'
-O objeto aluno pode ser criado com uma string do tipo 'prontuário, nome,
-Nenhum atributo pode ser vazio ou nulo, usar @property e @setters
-dois alunos são iguais se tiverem o mesmo prontuário, implementar o método
-__
-eq__
-implementar
-hash
-__
-__ para usar alunos em sets ou chaves de dicionário """
-class Aluno():
-""" Classe aluno com os atributos prontuario, nome, email """
-def
-init
-__
-__(self, prontuario, nome, email):
-""" método construtor com prontuário, nome, email """
-self.prontuario = prontuario
-self.nome = nome
-self.email = email
-@classmethod
-def criar
-de
-_
-_
-string(cls, dados
-_
-str):
-"""
-Cria um objeto Aluno a partir de uma string no formato 'prontuario, nome,
-email'
-.
-Exemplo: Aluno.criar
-de
-_
-_
-string("SP001, Maria, maria@email.com")
-"""
-if not dados
-_
-str or not isinstance(dados
-_
-str, str):
-raise ValueError("Dados incorretos.
-")
-try:
-prontuario, nome, email = [item.strip()
-for item in dados
-_
-str.split('
-,
-')]
-# Retorna uma nova instância da classe (cls)
-return cls(prontuario, nome, email)
-except ValueError:
-raise ValueError(
-"A string deve estar no formato: 'prontuario, nome, email'")
-@property
-def prontuario(self):
-""" retorna o prontuário """
-return self.
-_prontuario
-@prontuario.setter
-def prontuario(self, valor):
-""" atribui valor e testa para o prontuário """
-if not valor or not str(valor).strip():
-raise ValueError("O prontuário não pode ser vazio ou nulo.
-self.
-_prontuario = valor
-")
-@property
-def nome(self):
-""" retorna o nome do aluno """
-return self.
-nome_
-@nome.setter
-def nome(self, valor):
-""" atribui e testa valor para o nome do aluno """
-if not valor or not str(valor).strip():
-raise ValueError("O nome não pode ser vazio ou nulo.
-self.
-nome = valor
-_
-@property
-def email(self):
-""" retorna o email """
-return self.
-email
-_
-")
-@email.setter
-def email(self, valor):
-""" testa e seta o valor do email """
-if not valor or not str(valor).strip():
-raise ValueError("O email não pode ser vazio ou nulo.
-self.
-email = valor
-")
-_
-def
-__
-eq__(self, outro):
-""" Dois alunos são iguais se tiverem o mesmo prontuário """
-if isinstance(outro, Aluno):
-return self.prontuario == outro.prontuario
-return False
-def
-hash
-__
-__(self):
-""" Necessário para usar objetos Aluno em sets ou chaves de dicionário
-"""
-return hash(self.prontuario)
-def
-__
-repr
-__(self):
-""" Representação do objeto """
-return f"Aluno(prontuario='{self.prontuario}'
-email='{self.email}')"
-, nome='{self.nome}'
-,
-def
-str
-__
-__(self):
-""" Retorna a string aluno """
-return f"Aluno [ prontuario = {self.prontuario}, nome = {self.nome},
-email = {self.email}]"
-aluno1 = Aluno('sp001'
-print(aluno1)
-print('
-----
-')
-,
-'José da Silva'
-,
-'jose@email.com')
-aluno2 = Aluno.criar
-de
-_
-_
-string("SP30394, Maria Silva, maria@ufu.br")
-print(aluno2)
+""" Aula 08 - Herança entre classes e uso de super() """
+
+
+class Pessoa:  # SUPER CLASSE
+    """Define uma classe Pessoa com os atributos nome, sobrenome e cpf."""
+
+    def __init__(self, nome: str, sobrenome: str, cpf: str):
+        """Construtor da classe com nome, sobrenome e cpf."""
+        self.nome = nome
+        self.sobrenome = sobrenome
+        self.cpf = cpf
+
+    def obtem_nome_completo(self) -> str:
+        """Retorna o nome completo da pessoa."""
+        return f"{self.nome} {self.sobrenome}"
+
+
+class Cliente(Pessoa):  # SUBCLASSE
+    """Classe Cliente feita usando herança de Pessoa."""
+
+    def __init__(self, nome: str, sobrenome: str, cpf: str):
+        """Construtor da subclasse Cliente."""
+        super().__init__(nome, sobrenome, cpf)
+        self.compras = []
+
+
+class Funcionario(Pessoa):
+    """Classe Funcionario que herda de Pessoa e adiciona salário."""
+
+    def __init__(self, nome: str, sobrenome: str, cpf: str, salario: float):
+        """Construtor do objeto Funcionario com o salário."""
+        super().__init__(nome, sobrenome, cpf)
+        self.salario = float(salario)
+
+    def calcula_pagamento(self) -> float:
+        """Calcula o pagamento líquido do funcionário (desconto de 10%)."""
+        return self.salario - self.salario * 0.1
+
+
+class Programador(Funcionario):
+    """Classe Programador (subclasse de Funcionario) com bônus."""
+
+    def __init__(self, nome: str, sobrenome: str, cpf: str, salario: float, bonus: float):
+        """Construtor da classe Programador."""
+        super().__init__(nome, sobrenome, cpf, salario)
+        self.bonus = float(bonus)
+
+    def calcula_pagamento(self) -> float:
+        """Calcula o pagamento do programador somando o bônus ao pagamento do funcionário."""
+        return super().calcula_pagamento() + self.bonus
+
+
+if __name__ == '__main__':
+    # Cliente simples
+    cliente = Cliente("João", "da Silva", "111.111.111-11")
+    print(cliente.obtem_nome_completo(), type(cliente))
+
+    # Funcionário
+    funcionario = Funcionario("Maria", "da Silva", "222.222.222-22", 2000.45)
+    print(funcionario.obtem_nome_completo(),
+          funcionario.calcula_pagamento(),
+          funcionario.salario,
+          type(funcionario))
+
+    # Programador com bônus
+    prog = Programador("José", "Lopes da Silva", "333.333.333-33", 5000.00, 300.00)
+    print(prog.obtem_nome_completo())
+    print(prog.calcula_pagamento())
+    print(type(prog))
