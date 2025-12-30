@@ -1,119 +1,149 @@
 """
-Exercício 03 - Implementar uma classe Participacao, com os atributos:
-codigo - identificador da participação pode ser inteiro ou string
-data
-data
-_
-inicio - data inicial pode ser string
-_
-fim - data final pode ser string
-aluno - Objeto da classe Aluno
-projeto - Objeto da classe Projeto associado
+Exercício 04 - Lista de participações no Projeto
+Alterar a classe Projeto para incluir uma lista de participações e o método
+add_participacao.
 """
-# reaproveitamento dos exercícios Aluno e Projeto
-from ex01 import Aluno
-from ex02 import Projeto
-class Participacao:
-""" Classe participação """
-def
-init
-__
-__(self, codigo, data
-_
-inicio, data
-_
-fim,
-*dados):
-""" Construtor da classe participação com dois objetos Aluno e Projeto
-"""
-self.codigo = codigo
-self.data
-inicio = data
-inicio
-_
-_
-self.data
-fim = data
-fim
-_
-_
-self.aluno = Aluno.criar
-de
-_
-_
-string(dados[0])
-self.projeto = Projeto.criar
-_projeto(dados[1])
-@classmethod
-def criar
-_participacao(cls, string_participacoes):
-""" cria um objeto participacao a partir de uma string """
-if not string_participacoes or not isinstance(string_participacoes, str):
-raise ValueError("Erro -> a string deve ser válida")
+# Tentativa segura de importar a classe Participacao do ex03. Se o módulo
+# não existir no workspace, continuamos sem interromper o arquivo — os testes
+# que dependem de Participacao serão ignorados com aviso.
 try:
-{len(partes)}")
-partes = [p.strip().strip('"')
-for p in string_participacoes.split(';')]
-if len(partes) != 5:
-raise ValueError(
-f"String deve ter 5 partes separadas por ';'
-. Encontrado:
-codigo, data
-_
-inicio, data
-_
-fim,
-return cls(int(codigo), data
-_
-*dados = partes
-inicio, data
-fim,
-_
-*dados)
-except ValueError as e:
-raise ValueError(f'Erro ao criar participacao: {e}')
-def
-str
-__
-__(self):
-return f'Participacao [ codigo={self.codigo}, data
-_
-inicio=
-{self.data
-inicio}, data
-{self.projeto}]'
-_
-_
-fim={self.data
-_
-fim}, \n {self.aluno}, \n
-# teste 01
-print('\n----- Início do Teste Classe Participacao ----\n')
-DATA = '1234 ; "01-10-2025" ; "29-12-2026" ; "SP001, José da Silva,
-josé@email.com" ; "2, Laboratório de IA, Maria Silva"'
-try:
-participacao = Participacao.criar
-_participacao(DATA)
-print(participacao)
-except Exception as e:
-print(e)
-# teste 02
-# --- TESTE 02: SIMULAÇÃO DE ERRO ---
-print("\n--- Iniciando Teste 02 (Deve retornar erro) ---
-")
-DATA
-_
-ERRO = '9999;"01-01-2024";"30-06-2024";"SP002, Aluno Sem Email";"3, Projeto
-X, Prof. Girafales"'
-try:
-participacao
-_
-erro = Participacao.criar
-_participacao(DATA
-_
-ERRO)
-print(participacao
-_
-erro)
-except ValueError as e:
-print(f"Mensagem de erro capturada: {e}")
+    from ex03 import Participacao
+except Exception:
+    Participacao = None
+
+
+class Projeto:
+    """Classe Projeto Atualizada (com lista de participações)"""
+
+    def __init__(self, codigo, titulo, responsavel):
+        # Ao atribuir aqui, já acionamos os setters para validar
+        self.codigo = codigo
+        self.titulo = titulo
+        self.responsavel = responsavel
+        self.participacoes = []
+
+    @classmethod
+    def criar_projeto(cls, string_dados):
+        """Cria um objeto Projeto a partir de uma string 'cod, titulo, responsavel'"""
+        if not string_dados or not isinstance(string_dados, str):
+            raise ValueError("Erro -> deve ser passada uma string válida")
+        try:
+            partes = [p.strip() for p in string_dados.split(',')]
+            if len(partes) != 3:
+                raise ValueError("A string deve ter 3 partes separadas por vírgula.")
+            codigo_str, titulo, responsavel = partes
+            return cls(int(codigo_str), titulo, responsavel)
+        except Exception as e:
+            raise ValueError(f"Erro ao criar projeto: {e}")
+
+    @property
+    def codigo(self):
+        """retorna o código"""
+        return self._codigo
+
+    @codigo.setter
+    def codigo(self, valor):
+        """Valida se é inteiro e positivo"""
+        try:
+            valor_int = int(valor)
+        except (ValueError, TypeError):
+            raise ValueError("O código deve ser um número inteiro.")
+        if valor_int <= 0:
+            raise ValueError("O código deve ser um inteiro positivo.")
+        self._codigo = valor_int
+
+    @property
+    def titulo(self):
+        """retorna o título"""
+        return self._titulo
+
+    @titulo.setter
+    def titulo(self, valor):
+        if not valor or not str(valor).strip():
+            raise ValueError("O título não pode ser nulo ou vazio")
+        self._titulo = str(valor).strip()
+
+    @property
+    def responsavel(self):
+        """retorna o responsavel"""
+        return self._responsavel
+
+    @responsavel.setter
+    def responsavel(self, valor):
+        if not valor or not str(valor).strip():
+            raise ValueError("O responsável não pode ser nulo ou vazio")
+        self._responsavel = str(valor).strip()
+
+    def add_participacao(self, participacao):
+        """Adiciona uma participação ao projeto."""
+        if Participacao is None:
+            raise RuntimeError("Classe Participacao não está disponível (módulo ex03 não encontrado).")
+        if isinstance(participacao, Participacao):
+            self.participacoes.append(participacao)
+            print(f"Participação (Código: {getattr(participacao, 'codigo', '?')}) adicionada com sucesso ao Projeto {self.codigo}.")
+        else:
+            raise ValueError("O objeto fornecido não é uma instância válida da classe Participacao.")
+
+    def listar_participacoes(self):
+        """Método auxiliar para visualizar as participações (opcional, para testes)"""
+        print(f"\n--- Participações no Projeto: {self.titulo} ---")
+        if not self.participacoes:
+            print("Nenhuma participação cadastrada.")
+        else:
+            for p in self.participacoes:
+                print(f"- {p}")
+
+    def __eq__(self, other):
+        """Dois projetos são iguais se tiverem o mesmo código"""
+        if isinstance(other, Projeto):
+            return self.codigo == other.codigo
+        return False
+
+    def __str__(self):
+        # Atualizado para indicar quantas participações existem
+        qtd_part = len(self.participacoes)
+        return f'Projeto [Código: {self.codigo}, Título: "{self.titulo}", Responsável: {self.responsavel}, Participações: {qtd_part}]'
+
+
+# testes
+if __name__ == "__main__":
+    print('-----\nTestes do Projeto Atualizado (Ex04)\n-----')
+
+    # 1. Criar um projeto válido
+    try:
+        proj_novo = Projeto(100, 'Sistema de Gestão Acadêmica', 'Prof. Xavier')
+        print(f"Projeto criado: {proj_novo}")
+    except ValueError as e:
+        print(f"Erro ao criar projeto: {e}")
+
+    # 2. Criar Participações (Usando a classe do ex03) — somente se disponível
+    dados_part1 = '5001 ; "10-02-2025" ; "10-12-2025" ; "SP123, Ana Souza, ana@email.com" ; "100, SGA Módulo 1, Prof. Xavier"'
+    dados_part2 = '5002 ; "15-03-2025" ; "20-11-2025" ; "SP124, Carlos Lima, carlos@email.com" ; "100, SGA Módulo 2, Prof. Xavier"'
+
+    if Participacao is None:
+        print('\nAviso: módulo ex03 ou classe Participacao não encontrada. Testes de Participacao serão pulados.')
+    else:
+        try:
+            part1 = Participacao.criar_participacao(dados_part1)
+            part2 = Participacao.criar_participacao(dados_part2)
+
+            print("\nTentando adicionar participações...\n")
+            # 3. Testar o método add_participacao
+            proj_novo.add_participacao(part1)
+            proj_novo.add_participacao(part2)
+
+            # 4. Verificar se foram adicionadas
+            print(f"\nEstado atual do projeto: {proj_novo}")
+            # Listar detalhadamente
+            proj_novo.listar_participacoes()
+        except Exception as e:
+            print(f"Erro durante os testes: {e}")
+
+        # 5. Teste de erro (passando objeto inválido)
+        print("\nTeste de Validação (Objeto Inválido):")
+        try:
+            proj_novo.add_participacao("Uma string qualquer, não um objeto Participacao")
+        except ValueError as e:
+            print(f"Erro esperado capturado: {e}")
+        except Exception as e:
+            print(f"Outro erro capturado durante o teste inválido: {e}")
