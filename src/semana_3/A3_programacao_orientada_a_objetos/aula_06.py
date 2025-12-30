@@ -1,24 +1,47 @@
 """ Aula 06 - equal e hash code """
 
-# Tanto em python quanto em outras linguagens temos formas de comparação
-NOME1 = 'João'
-NOME2 = 'João'
-
-# avalia se duas strings são verdadeiras
-print(NOME1 == NOME2)
-
 class Pessoa():
-""" Cria um objeto da classe pessoa """
+     """ Cria um objeto da classe pessoa """
+     def __init__(self, cpf, nome):
+     """ construtor da classe pessoa com nome como parametro"""
+     self.cpf = cpf
+     self.nome = nome
+    
+     def __eq__(self, value):
+         """ retorna verdadeiro ou falso para certo value """
+         if isinstance(value, self.__class__):
+             return self.cpf == value.cpf
+         return False
+         
+     def __hash__(self):
+        """ retorna o hash do atributo escolhido """
+        return hash(self.cpf)
+     
+    def __repr__(self):
+       """retorna o objeto em sua forma canônica """
+       return f'Pessoa({self.cpf}, {self.nome})'
 
-    def __init__(self, nome):
-    """ construtor da classe pessoa com nome como parametro"""
-    self.nome = nome
 
+    def __str__(self):
+       """ retorna o objeto em sua forma de string """
+       return f'Pessoa[cpf={self.cpf}, nome={self.nome}]'
 
-pessoa1 = Pessoa('João')
-pessoa2 = Pessoa('João')
+pessoa1 = Pessoa('123456890-11','João')
+pessoa2 = Pessoa('123321123-11','João')
+                 
+# pessoa3 tem os mesmos valores de pessoa2
+pessoa3 = Pessoa('123321123-11','João')
 
-# comparação entre pessoa1 e pessoa2
-print(pessoa1 == pessoa2)
-print(pessoa1)
-print(pessoa2)
+pessoas = {pessoa1, pessoa2, pessoa3}
+
+# imprime o set pessoas
+print()
+print(pessoas)
+print()
+
+# imprime a lista de pessoas 
+lista_pessoas = [pessoa1, pessoa2, pessoa3]
+
+print()
+print(lista_pessoas)
+print()
