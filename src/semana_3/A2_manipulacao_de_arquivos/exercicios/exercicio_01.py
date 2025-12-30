@@ -1,23 +1,8 @@
-""" Ex 02 - Carregar dados de projeto """
-def carregar_dados_projetos(nome_arquivo):
-    """Retorna uma tupla de dicionários com dados de projetos."""
-    with open(nome_arquivo, 'r', encoding='utf-8') as arq:
-       projeto = []
-       for linha in arq:
-           codigo, titulo, responsavel = linha.strip().replace('\''
-'').split(',') projeto.append(
-                   {
-                     'codigo': codigo,
-                     'titulo': titulo,
-                     'responsavel': responsavel,
-                   }
-           )
+""" Ex 01 - Carregar dados de alunos """
 
-       return tuple(projeto)
-
-ARQUIVO = 'arquivo_ex02.txt'
-
-lista_dados = carregar_dados_projetos(ARQUIVO)
-
-print(type(lista_dados))
-print(lista_dados)
+def carregar_dados_alunos(nome_arquivo):
+    """ retorna uma tupla de dicionários com os dados do arquivo """
+    lista_dicionario = list()
+    with open(nome_arquivo,'r', encoding='utf-8') as arq:
+        linha = arq.read()
+        linha = linha.split('\n')
